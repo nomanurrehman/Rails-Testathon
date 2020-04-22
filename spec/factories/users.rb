@@ -4,15 +4,21 @@ FactoryBot.define do
     last_name { Faker::Name.last_name }
     date_of_birth { Faker::Date.birthday(min_age: 18, max_age: 50) }
 
-    # Generating users with orders
-    factory :user_with_orders do
+    # For a user with orders and products
+    factory :user_with_orders_and_products do
+      
       transient do
         orders_count { 10 }
+        products_count { 10 }
       end
 
       after(:create) do |user, evaluator|
-        create_list(:order, evaluator.orders_count, user: user)
+        1.upto(evaluator.orders_count) do |n|
+          products = create_list(:product, evaluator.products_count)
+          create(:order, user: user, products: products)
+        end
       end
+      
     end
   end
 end
